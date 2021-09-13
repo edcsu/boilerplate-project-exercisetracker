@@ -71,7 +71,6 @@ app.post("/api/users", async (req, res) => {
         username,
       });
       let createdUser = await foundUser.save();
-      console.log(createdUser)
       return res.json({
         username,
         _id: createdUser.id
@@ -113,9 +112,14 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         duration,
         date: new Date(date).toDateString()
       });
-      await exercise.save();
+      const savedExercise = await exercise.save();
+      console.log(savedExercise)
       return res.json({
-        ...exercise
+        username: savedExercise.username,
+        description: savedExercise.description,
+        duration: savedExercise.duration,
+        date: savedExercise.date,
+        _id: savedExercise._id
       });
     }
   } catch (err) {
