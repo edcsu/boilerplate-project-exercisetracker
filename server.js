@@ -85,10 +85,12 @@ app.post("/api/users", async (req, res) => {
 
 // get a list of users
 app.get("/api/users", async (req, res) => {
-  const usersList =  await User.find({});
-  return res.json({
-    ...usersList
+  const foundUsers =  await User.find({});
+  let usersList = [];
+  foundUsers.map((user) => {
+    usersList.push(user);
   });
+  return res.send(usersList);
 });
 
 // add exercises
