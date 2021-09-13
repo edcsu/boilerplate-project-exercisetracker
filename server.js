@@ -82,8 +82,11 @@ app.get("/api/users", async (req, res) => {
 });
 
 // add exercises
-app.get("/api/users/:_id/exercises", async (req, res) => {
+app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
+  const description = req.body.description;
+  const duration = req.body.duration;
+  const date = req.body.date;
 
   try {
     // check if user exists
@@ -92,9 +95,38 @@ app.get("/api/users/:_id/exercises", async (req, res) => {
       return res.json({ error: `User not found with ${id}.`});
     } else {
       // create new exercise record
-      const logs = await Person.findById(id)
-      .sort({ name: 1 })
-      .limit(2)
+      let exercise = new Exercise({
+        username : foundUser.username,
+        description,
+        duration,
+        date: new Date(date).toDateString()
+      });
+      await exercise.save();
+      return res.json({
+        ...exercise
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json("oops something broke");
+  }
+});
+
+// get logs
+app.get("/api/users/:_id/logs", async (req, res) => {
+  const id = req.params._id;
+  const limit = req.query.limit;
+
+  try {
+    // check if user exists
+    let foundUser = await User.findById(id);
+    if (!foundUser) {
+      return res.json({ error: `User not found with ${id}.`});
+    } else {
+      // get user logs
+      const logs = await Log.findById(id)
+      .sort({ date: -1 })
+      .limit(limit)
       .select({ age: 0 })
       .exec()
       
