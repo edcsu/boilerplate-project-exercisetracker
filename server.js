@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const bodyParser = require('body-parser');
 const cors = require("cors");
 require("dotenv").config();
 
@@ -39,6 +40,10 @@ const logSchema = new Schema({
 const Log = mongoose.model("log", logSchema);
 
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
@@ -54,17 +59,22 @@ app.post("/api/users", async (req, res) => {
       username,
     });
     if (foundUser) {
+      console.log(`User with username: ${username} already exists.`);
       return res.json({
-        ...foundUser
+        username,
+        _id: foundUser.id
       });
     } else {
       // create new User record
+      console.log(`Creating user with username: ${username}.`);
       foundUser = new User({
         username,
       });
-      await foundUser.save();
+      let createdUser = await foundUser.save();
+      console.log(createdUser)
       return res.json({
         username,
+        _id: createdUser.id
       });
     }
   } catch (err) {
