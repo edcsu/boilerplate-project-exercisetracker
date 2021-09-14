@@ -91,7 +91,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
-  const date = req.body.date === '' ? new Date() : new Date(req.body.date);
+  const date = req.body.date === '' || typeof req.body.date === 'undefined' ? new Date() : new Date(req.body.date);
 
   try {
     // check if user exists
