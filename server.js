@@ -91,7 +91,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
-  const date = req.body.date === '' ? Date.now() : req.body.date;
+  const date = req.body.date === '' ? Date.now() : new Date(req.body.date);
 
   try {
     // check if user exists
@@ -103,10 +103,11 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       } else {
         // create new log
         let newLog = {
+          _id: id,
           username : data.username,
           description,
           duration,
-          date: date.toDateString()
+          date: date.toString().slice(0, 15)
         };
         data.log = data.log.concat(newLog);
         data.log = data.log.sort((a, b) => a.date - b.date);
@@ -115,13 +116,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
           if (error) return console.error(error)
         });
 
-        return res.json({
-          username: data.username,
-          description: newLog.description,
-          duration: newLog.duration,
-          _id: data._id,
-          date: new Date(newLog.date).toDateString()
-        });
+        return res.json(newLog);
       }
     });
 
@@ -170,12 +165,15 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         }
         
         if(limit){
-          userFound.log = userFound.log.slice(0, limit)
+          userFound.log = userFound.log.slice(0, +limit)
         }
         
-        userFound = userFound.toJSON()
-        userFound['count'] = result.log.length
-        res.json(userFound)
+        res.json({
+          userId: id,
+          username: userFound.username,
+          count: userFound.log.length,
+          log: userFound.log
+        });
       }
     })
   } catch (err) {
