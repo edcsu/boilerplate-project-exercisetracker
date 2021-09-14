@@ -159,20 +159,27 @@ app.get("/api/users/:_id/logs", async (req, res) => {
             let exerciseDate = new Date(exercise.date).getTime()
             
             return exerciseDate >= from && exerciseDate <= to
-            
           })
-          
         }
         
         if(limit){
           userFound.log = userFound.log.slice(0, +limit)
         }
+
+        let logs = [];
+        userFound.log.forEach(log => {
+          logs.push({
+            description: log.description,
+            duration: log.duration,
+            date: log.date
+          })
+        });
         
         res.json({
-          userId: id,
+          _id: id,
           username: userFound.username,
           count: userFound.log.length,
-          log: userFound.log
+          log: logs
         });
       }
     })
