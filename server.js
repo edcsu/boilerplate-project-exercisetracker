@@ -118,7 +118,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         return res.json({
           _id: data._id,
           username: data.username,
-          date: newLog.date,
+          date: new Date(newLog.date).toISOString().slice(0, 10),
           description: newLog.description,
           duration: newLog.duration,
         });
@@ -174,7 +174,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         }
 
         userFound.log.forEach(log => {
-          log.date =  new Date(log.date).toString()
+          log.date =  new Date(log.date).toISOString().slice(0, 10)
         });
         
         userFound = userFound.toJSON()
