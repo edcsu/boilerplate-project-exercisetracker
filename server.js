@@ -106,7 +106,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
           username : data.username,
           description,
           duration,
-          date: new Date(date).toDateString()
+          date: new Date(date).toString()
         };
         data.log = data.log.concat(newLog);
         data.log = data.log.sort((a, b) => a.date - b.date);
@@ -116,11 +116,11 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         });
 
         return res.json({
-          username: data.username,
-          description,
-          duration,
-          date: newLog.date,
           _id: data._id,
+          username: data.username,
+          date: newLog.date,
+          description: newLog.description,
+          duration: newLog.duration,
         });
       }
     });
@@ -140,30 +140,44 @@ app.get("/api/users/:_id/logs", async (req, res) => {
 
   try {
     // check if user exists
-    let foundUser = await User.findById(id);
-    if (!foundUser) {
-      return res.json({ error: `User not found with ${id}.`});
-    } else {
-      // get user logs
-      if (from === undefined) {
-        from = new Date(0);
+    User.findById(id, (error, result) => {
+      if(!error){
+        let userFound = result
+        
+        if(from || to){
+          
+          from = new Date(0)
+          to = new Date()
+          
+          if(from){
+            from = new Date(from)
+          }
+          
+          if(to){
+            to = new Date(to)
+          }
+          
+          from = from.getTime()
+          to = to.getTime()
+          
+          userFound.log = userFound.log.filter((session) => {
+            let sessionDate = new Date(session.date).getTime()
+            
+            return sessionDate >= from && sessionDate <= to
+            
+          })
+          
+        }
+        
+        if(limit){
+          userFound.log = userFound.log.slice(0, limit)
+        }
+        
+        userFound = userFound.toJSON()
+        userFound['count'] = result.log.length
+        response.json(userFound)
       }
-      if (to === undefined) {
-          to = new Date();
-      }
-      if (limit === undefined) {
-          limit = 0;
-      } else {
-          limit = parseInt(limit);
-      }
-
-      await Exercise.find({username:foundUser.username, date: {$lt: to, $gt: from}})
-      .limit(limit)
-      .exec((error, exercises) => {
-        if(error) console.log(error);
-        res.json(exercises);
-      })
-    }
+    })
   } catch (err) {
     console.error(err);
     return res.status(500).json("oops something broke");
