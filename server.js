@@ -172,6 +172,10 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         if(limit){
           userFound.log = userFound.log.slice(0, limit)
         }
+
+        userFound.log(log => {
+          log.date =  new Date(log.date).toString()
+        });
         
         userFound = userFound.toJSON()
         userFound['count'] = result.log.length
