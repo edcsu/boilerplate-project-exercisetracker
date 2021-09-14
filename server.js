@@ -175,7 +175,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         
         userFound = userFound.toJSON()
         userFound['count'] = result.log.length
-        response.json(userFound)
+        res.json(userFound)
       }
     })
   } catch (err) {
