@@ -173,7 +173,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
           userFound.log = userFound.log.slice(0, limit)
         }
 
-        userFound.log(log => {
+        userFound.log.forEach(log => {
           log.date =  new Date(log.date).toString()
         });
         
