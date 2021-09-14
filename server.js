@@ -91,7 +91,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
-  const date = !req.body.date ? Date.now() : req.body.date;
+  const date = req.body.date === '' ? Date.now() : req.body.date;
 
   try {
     // check if user exists
@@ -106,7 +106,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
           username : data.username,
           description,
           duration,
-          date: new Date(date).toString()
+          date: date.toDateString()
         };
         data.log = data.log.concat(newLog);
         data.log = data.log.sort((a, b) => a.date - b.date);
@@ -116,11 +116,11 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         });
 
         return res.json({
-          _id: data._id,
           username: data.username,
-          date: new Date(newLog.date).toISOString().slice(0, 10),
           description: newLog.description,
           duration: newLog.duration,
+          _id: data._id,
+          date: new Date(newLog.date).toDateString()
         });
       }
     });
@@ -160,10 +160,10 @@ app.get("/api/users/:_id/logs", async (req, res) => {
           from = from.getTime()
           to = to.getTime()
           
-          userFound.log = userFound.log.filter((session) => {
-            let sessionDate = new Date(session.date).getTime()
+          userFound.log = userFound.log.filter((exercise) => {
+            let exerciseDate = new Date(exercise.date).getTime()
             
-            return sessionDate >= from && sessionDate <= to
+            return exerciseDate >= from && exerciseDate <= to
             
           })
           
@@ -172,10 +172,6 @@ app.get("/api/users/:_id/logs", async (req, res) => {
         if(limit){
           userFound.log = userFound.log.slice(0, limit)
         }
-
-        userFound.log.forEach(log => {
-          log.date =  new Date(log.date).toISOString().slice(0, 10)
-        });
         
         userFound = userFound.toJSON()
         userFound['count'] = result.log.length
