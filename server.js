@@ -15,7 +15,7 @@ const exerciseSchema = new Schema({
   username: { type: String, required: true },
   description: { type: String, required: true },
   duration: { type: Number, required: true },
-  date: { type: String, default: Date.now},
+  date: { type: String },
 });
 const Exercise = mongoose.model("exercise", exerciseSchema);
 
@@ -27,7 +27,7 @@ const userSchema = new Schema({
     {
       description: { type: String, required: true },
       duration: { type: Number, required: true },
-      date: { type: String, default: Date.now },
+      date: { type: String, },
     },
   ],
 });
@@ -91,7 +91,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
-  const date = req.body.date === '' ? Date.now() : new Date(req.body.date);
+  const date = req.body.date === '' ? new Date() : new Date(req.body.date);
 
   try {
     // check if user exists
