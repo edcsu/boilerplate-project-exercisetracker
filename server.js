@@ -104,10 +104,10 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         // create new log
         let newLog = {
           _id: id,
-          username : data.username,
           description,
-          duration,
-          date: date.toString().slice(0, 15)
+          duration: +duration,
+          date: date.toString().slice(0, 15),
+          username : data.username,
         };
         data.log = data.log.concat(newLog);
         data.log = data.log.sort((a, b) => a.date - b.date);
