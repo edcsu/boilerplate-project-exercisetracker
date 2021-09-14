@@ -117,9 +117,10 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
         return res.json({
           username: data.username,
+          description,
+          duration,
           count: data.log.length,
           _id: data._id,
-          log: data.log,
         });
       }
     });
