@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-const mongoURI = process.env["MONGO_URI"];
+const mongoURI = process.env.MONGO_URI;
 const { Schema } = mongoose;
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
